@@ -2,7 +2,7 @@ defmodule Inventory.Router do
   use Inventory.Web, :router
 
   pipeline :api do
-    plug :accepts, ["json"]
+    plug :accepts, ["json-api"]
   end
 
   scope "/api", Inventory.Api, as: :api do
