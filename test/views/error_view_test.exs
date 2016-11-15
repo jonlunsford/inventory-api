@@ -6,16 +6,16 @@ defmodule Inventory.ErrorViewTest do
 
   test "renders 404.json" do
     assert render(Inventory.ErrorView, "404.json", []) ==
-           %{errors: %{detail: "Page not found"}}
+          %{"errors" => [%{code: 404, title: "Page not found"}]}
   end
 
   test "render 500.json" do
     assert render(Inventory.ErrorView, "500.json", []) ==
-           %{errors: %{detail: "Internal server error"}}
+           %{"errors" => [%{code: 500, title: "Internal server error"}]}
   end
 
   test "render any other" do
     assert render(Inventory.ErrorView, "505.json", []) ==
-           %{errors: %{detail: "Internal server error"}}
+           %{"errors" => [%{code: 500, title: "Internal server error"}]}
   end
 end
