@@ -36,7 +36,7 @@ defmodule Inventory.Endpoint do
     key: "_inventory_key",
     signing_salt: "egBuSceI"
 
-  plug CORSPlug
+  plug CORSPlug, [origin: 'http://localhost:3000']
 
   plug Inventory.Router
 end

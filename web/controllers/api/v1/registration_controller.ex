@@ -4,9 +4,12 @@ defmodule Inventory.Api.V1.RegistrationController do
   alias Inventory.User
   alias Inventory.Repo
 
-  def create(conn, %{"data" => %{"type" => "users", "attributes" => params }}) do
+  def create(conn, %{"data" => %{"type" => "users", "attributes" =>
+      %{"email" => email,
+        "password" => password,
+        "password-confirmation" => password_confirmation}}}) do
 
-    changeset = User.changeset(%User{}, params)
+    changeset = User.changeset(%User{}, %{email: email, password: password, password_confirmation: password_confirmation})
 
     case Repo.insert changeset do
       {:ok, user} ->
