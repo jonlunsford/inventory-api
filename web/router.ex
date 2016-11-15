@@ -5,6 +5,12 @@ defmodule Inventory.Router do
     plug :accepts, ["json-api", "json"]
   end
 
+  pipeline :api_auth do
+    plug :accepts, ["json-api", "json"]
+    plug Guardian.Plug.VerifyHeader
+    plug Guardian.Plug.LoadResource
+  end
+
   scope "/api", Inventory.Api, as: :api do
     pipe_through :api
 
@@ -13,4 +19,13 @@ defmodule Inventory.Router do
       post "/token", SessionController, :create, as: :login
     end
   end
+
+  scope "/api", Inventory.Api, as: :api do
+    pipe_through :api_auth
+
+    scope "/v1", V1, as: :v1 do
+      get "/user/current", UserController, :current
+    end
+  end
 end
+
