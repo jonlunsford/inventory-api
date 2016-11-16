@@ -6,14 +6,17 @@ defmodule Inventory.Api.V1.SessionController do
   import Ecto.Query, only: [where: 2]
   import Comeonin.Bcrypt
 
-  def create(conn, %{"grant_type" => "password" } = params) do
+  def create(conn, %{"grant_type" => "password",
+    "username" => username,
+    "password" => password }) do
+
     try do
       user = User
-      |> where(email: ^params["email"])
+      |> where(email: ^username)
       |> Repo.one!
 
       cond do
-        checkpw(params["password"], user.password_hash) ->
+        checkpw(password, user.password_hash) ->
           { :ok, jwt, _} = Guardian.encode_and_sign(user, :token)
 
           conn
