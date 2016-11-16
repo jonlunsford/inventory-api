@@ -16,13 +16,17 @@ defmodule Inventory.Api.V1.SessionControllerTest do
     User.changeset(%User{}, %{email: "test@example.com", password: "password", password_confirmation: "password"})
     |> Repo.insert!
 
+    conn = conn
+           |> put_req_header("accept", "application/vnd.api+json")
+           |> put_req_header("content-type", "application/vnd.api+json")
+
     on_exit fn ->
       Ecto.Adapters.SQL.Sandbox.checkout(Repo)
 
       Inventory.Repo.delete_all(User)
     end
 
-    { :ok, conn: put_req_header(conn, "accept", "application/json") }
+    { :ok, conn: conn }
   end
 
   test "POST /api/v1/token", %{conn: conn} do

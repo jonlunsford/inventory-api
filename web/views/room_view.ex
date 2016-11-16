@@ -1,17 +1,12 @@
 defmodule Inventory.RoomView do
   use Inventory.Web, :view
+  use JaSerializer.PhoenixView
 
-  def render("index.json", %{rooms: rooms}) do
-    %{data: render_many(rooms, Inventory.RoomView, "room.json")}
+  attributes [:name]
+  has_one :owner, link: :user_link
+
+  def user_link(room, conn) do
+    api_v1_user_url(conn, :show, room.owner_id)
   end
 
-  def render("show.json", %{room: room}) do
-    %{data: render_one(room, Inventory.RoomView, "room.json")}
-  end
-
-  def render("room.json", %{room: room}) do
-    %{id: room.id,
-      name: room.name,
-      owner_id: room.owner_id}
-  end
 end

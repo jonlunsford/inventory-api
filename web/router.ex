@@ -3,10 +3,11 @@ defmodule Inventory.Router do
 
   pipeline :api do
     plug :accepts, ["json-api", "json"]
+    plug JaSerializer.ContentTypeNegotiation
+    plug JaSerializer.Deserializer
   end
 
   pipeline :api_auth do
-    plug :accepts, ["json-api", "json"]
     plug Guardian.Plug.VerifyHeader, realm: "Bearer"
     plug Guardian.Plug.LoadResource
   end
@@ -21,10 +22,16 @@ defmodule Inventory.Router do
   end
 
   scope "/api", Inventory.Api, as: :api do
+    pipe_through :api
     pipe_through :api_auth
 
     scope "/v1", V1, as: :v1 do
       get "/user/current", UserController, :current
+
+      resources "/user", UserController, only: [:show, :index] do
+        get "/rooms", RoomController, :index, as: :rooms
+      end
+
       resources "/rooms", RoomController, except: [:new, :edit]
     end
   end

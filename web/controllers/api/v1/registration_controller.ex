@@ -4,22 +4,18 @@ defmodule Inventory.Api.V1.RegistrationController do
   alias Inventory.User
   alias Inventory.Repo
 
-  def create(conn, %{"data" => %{"type" => "users", "attributes" =>
-      %{"email" => email,
-        "password" => password,
-        "password-confirmation" => password_confirmation}}}) do
-
-    changeset = User.changeset(%User{}, %{email: email, password: password, password_confirmation: password_confirmation})
+  def create(conn, %{"data" => %{"type" => "users", "attributes" => params }}) do
+    changeset = User.changeset(%User{}, params)
 
     case Repo.insert changeset do
       {:ok, user} ->
         conn
         |> put_status(:created)
-        |> render(Inventory.UserView, "show.json", user: user)
+        |> render(Inventory.UserView, "show.json-api", data: user)
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
-        |> render(Inventory.ChangesetView, "error.json", changeset: changeset)
+        |> render(Inventory.UserView, "errors.json-api", changeset: changeset)
     end
   end
 end
