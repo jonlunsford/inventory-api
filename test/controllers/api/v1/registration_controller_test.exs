@@ -7,7 +7,7 @@ defmodule Inventory.Api.V1.RegistrationControllerTest do
   @valid_attrs %{
     email: "test@test.com",
     password: "password",
-    password_confirmation: "password"
+    "password-confirmation": "password"
   }
 
   @invalid_attrs %{}
