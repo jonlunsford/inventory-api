@@ -25,6 +25,7 @@ defmodule Inventory.Router do
 
     scope "/v1", V1, as: :v1 do
       get "/user/current", UserController, :current
+      resources "/rooms", RoomController, except: [:new, :edit]
     end
   end
 end
