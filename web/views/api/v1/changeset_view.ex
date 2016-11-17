@@ -1,4 +1,4 @@
-defmodule Inventory.ChangesetView do
+defmodule Inventory.Api.V1.ChangesetView do
   use Inventory.Web, :view
 
   @doc """

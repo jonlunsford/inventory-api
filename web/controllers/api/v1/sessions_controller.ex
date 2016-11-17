@@ -2,6 +2,7 @@ defmodule Inventory.Api.V1.SessionController do
   use Inventory.Web, :controller
 
   alias Inventory.User
+  alias Inventory.ErrorView
 
   import Ecto.Query, only: [where: 2]
   import Comeonin.Bcrypt
@@ -15,6 +16,7 @@ defmodule Inventory.Api.V1.SessionController do
       |> where(email: ^username)
       |> Repo.one!
 
+
       cond do
         checkpw(password, user.password_hash) ->
           { :ok, jwt, _} = Guardian.encode_and_sign(user, :token)
@@ -25,15 +27,15 @@ defmodule Inventory.Api.V1.SessionController do
         true ->
           conn
           |> put_status(401)
-          |> render(Inventory.ErrorView, "401.json")
+          |> render(ErrorView, "401.json")
       end
     rescue
       e ->
-
         IO.inspect e
+
         conn
         |> put_status(401)
-        |> render(Inventory.ErrorView, "401.json")
+        |> render(ErrorView, "401.json")
     end
   end
 

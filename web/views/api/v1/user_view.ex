@@ -1,4 +1,4 @@
-defmodule Inventory.UserView do
+defmodule Inventory.Api.V1.UserView do
   use Inventory.Web, :view
   use JaSerializer.PhoenixView
 

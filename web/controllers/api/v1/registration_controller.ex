@@ -3,6 +3,7 @@ defmodule Inventory.Api.V1.RegistrationController do
 
   alias Inventory.User
   alias Inventory.Repo
+  alias Inventory.Api.V1.UserView
 
   def create(conn, %{"data" => %{"type" => "users", "attributes" => params }}) do
     changeset = User.changeset(%User{}, params)
@@ -11,11 +12,11 @@ defmodule Inventory.Api.V1.RegistrationController do
       {:ok, user} ->
         conn
         |> put_status(:created)
-        |> render(Inventory.UserView, "show.json-api", data: user)
+        |> render(UserView, "show.json-api", data: user)
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
-        |> render(Inventory.UserView, "errors.json-api", changeset: changeset)
+        |> render(UserView, "errors.json-api", changeset: changeset)
     end
   end
 end
