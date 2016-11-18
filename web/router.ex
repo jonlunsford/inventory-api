@@ -31,6 +31,7 @@ defmodule Inventory.Router do
 
       resources "/user", UserController, only: [:show, :index] do
         resources "/companies", CompanyController, only: [:index], as: :companies
+        resources "/categories", CategoryController, only: [:index], as: :categories
 
         resources "/rooms", RoomController, only: [:index], as: :rooms do
           get "/messages", MessageController, :index, as: :messages
@@ -38,6 +39,7 @@ defmodule Inventory.Router do
       end
 
       resources "/companies", CompanyController, except: [:new, :edit]
+      resources "/categories", CategoryController, except: [:new, :edit]
 
       resources "/rooms", RoomController, except: [:new, :edit]
       resources "/messages", MessageController, except: [:new, :edit]
