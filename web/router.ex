@@ -30,10 +30,13 @@ defmodule Inventory.Router do
       get "/user/current", UserController, :current
 
       resources "/user", UserController, only: [:show, :index] do
-        get "/rooms", RoomController, :index, as: :rooms
+        resources "/rooms", RoomController, only: [:index], as: :rooms do
+          get "/messages", MessageController, :index, as: :messages
+        end
       end
 
       resources "/rooms", RoomController, except: [:new, :edit]
+      resources "/messages", MessageController, except: [:new, :edit]
     end
   end
 end
