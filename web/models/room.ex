@@ -4,6 +4,7 @@ defmodule Inventory.Room do
   schema "rooms" do
     field :name, :string
     belongs_to :owner, Inventory.Owner
+    has_many :messages, Inventory.Message
 
     timestamps()
   end

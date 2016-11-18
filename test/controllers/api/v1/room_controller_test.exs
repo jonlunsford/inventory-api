@@ -25,6 +25,20 @@ defmodule Inventory.Api.V1.RoomControllerTest do
     {:ok, %{conn: conn, user: user}}
   end
 
+  defp relationships do
+    owner = Repo.insert!(%Inventory.User{})
+    message = Repo.insert!(%Inventory.Message{owner_id: owner.id})
+
+    %{
+      "message" => %{
+        "data" => %{
+          "content" => "some content",
+          "id" => message.id
+        }
+      }
+    }
+  end
+
   test "lists all entries on index", %{conn: conn} do
     conn = get conn, api_v1_room_path(conn, :index)
     assert json_response(conn, 200)["data"] == []
@@ -40,11 +54,17 @@ defmodule Inventory.Api.V1.RoomControllerTest do
   end
 
   test "shows chosen resource", %{conn: conn, user: user} do
-    room = Repo.insert! %Room{owner_id: user.id}
-    conn = get conn, api_v1_user_rooms_path(conn, :index, room)
-    responce = List.first(json_response(conn, 200)["data"])
+    room = Repo.insert! %Room{owner_id: user.id, name: "My Room"}
 
-    assert responce["id"] == Integer.to_string(room.id)
+    Ecto.build_assoc(room, :messages, content: "My Content", owner_id: user.id)
+    |> Repo.insert
+
+    conn = get conn, api_v1_room_path(conn, :show, room)
+
+    response = json_response(conn, 200)
+
+    assert response["data"]["id"] == Integer.to_string(room.id)
+    assert List.first(response["included"])["attributes"]["content"] == "My Content"
   end
 
   test "renders page not found when id is nonexistent", %{conn: conn} do
@@ -54,8 +74,14 @@ defmodule Inventory.Api.V1.RoomControllerTest do
   end
 
   test "creates and renders resource when data is valid", %{conn: conn} do
-    params = %{"data" => %{"type" => "rooms", "attributes" => @valid_attrs, relationships:  ""}}
-    conn = post conn, api_v1_room_path(conn, :create), params
+    conn = post conn, api_v1_room_path(conn, :create), %{
+      "meta" => %{},
+      "data" => %{
+        "type" => "rooms",
+        "attributes" => @valid_attrs,
+        "relationships" => relationships
+      }
+    }
 
     assert json_response(conn, 201)["data"]["id"]
     assert Repo.get_by(Room, @valid_attrs)

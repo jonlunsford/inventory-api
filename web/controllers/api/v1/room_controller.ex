@@ -6,15 +6,15 @@ defmodule Inventory.Api.V1.RoomController do
   plug Guardian.Plug.EnsureAuthenticated, handler: Inventory.AuthErrorHandler
 
   def index(conn, %{user_id: user_id}) do
-    rooms = Room
-            |> where(owner_id: ^user_id)
-            |> Repo.all
+    query = from r in "rooms", where: r.owner_id == ^user_id, select: r.*, preload: [:messages]
+    rooms = query |> Repo.all
 
     render(conn, "index.json-api", data: rooms)
   end
 
   def index(conn, _params) do
-    rooms = Repo.all(Room)
+    query = from r in Room, preload: [:messages]
+    rooms = query |> Repo.all
     render(conn, "index.json-api", data: rooms)
   end
 
@@ -27,7 +27,7 @@ defmodule Inventory.Api.V1.RoomController do
         conn
         |> put_status(:created)
         |> put_resp_header("location", api_v1_room_path(conn, :show, room))
-        |> render("show.json-api", data: room)
+        |> render("show.json-api", data: (room |> Repo.preload(:messages)))
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
@@ -36,7 +36,10 @@ defmodule Inventory.Api.V1.RoomController do
   end
 
   def show(conn, %{"id" => id}) do
-    room = Repo.get!(Room, id)
+    room =
+      Repo.get!(Room, id)
+      |> Repo.preload(:messages)
+
     render(conn, "show.json-api", data: room)
   end
 
@@ -46,6 +49,7 @@ defmodule Inventory.Api.V1.RoomController do
     room = Room
            |> where(owner_id: ^current_user.id, id: ^id)
            |> Repo.one!
+           |> Repo.preload(:messages)
 
     changeset = Room.changeset(room, room_params)
 
