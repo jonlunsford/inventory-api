@@ -9,6 +9,7 @@ defmodule Inventory.User do
     field :password_confirmation, :string, virtual: true
 
     has_many :messags, Inventory.Message
+    belongs_to :room, Inventory.Room
 
     timestamps()
   end

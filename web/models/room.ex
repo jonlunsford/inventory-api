@@ -3,7 +3,9 @@ defmodule Inventory.Room do
 
   schema "rooms" do
     field :name, :string
-    belongs_to :owner, Inventory.Owner
+
+    belongs_to :owner, Inventory.User
+    has_one :participant, Inventory.User
     has_many :messages, Inventory.Message
 
     timestamps()

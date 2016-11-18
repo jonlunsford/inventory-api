@@ -6,7 +6,8 @@ defmodule Inventory.Api.V1.RoomController do
   plug Guardian.Plug.EnsureAuthenticated, handler: Inventory.AuthErrorHandler
 
   def index(conn, %{user_id: user_id}) do
-    query = from r in "rooms", where: r.owner_id == ^user_id, select: r.*, preload: [:messages]
+    IO.inspect user_id
+    query = from r in "rooms", where: r.owner_id == ^user_id, preload: [:messages]
     rooms = query |> Repo.all
 
     render(conn, "index.json-api", data: rooms)
