@@ -11,8 +11,9 @@ defmodule Inventory.Api.V1.CompanyController do
     render(conn, "index.json-api", data: companies)
   end
 
-  def create(conn, %{"data" => data = %{"type" => "company", "attributes" => _company_params}}) do
-    changeset = Company.changeset(%Company{}, Params.to_attributes(data))
+  def create(conn, %{"data" => data = %{"type" => "companies", "attributes" => _company_params}}) do
+    current_user = Guardian.Plug.current_resource(conn)
+    changeset = Company.changeset(%Company{owner_id: current_user.id}, Params.to_attributes(data))
 
     case Repo.insert(changeset) do
       {:ok, company} ->
@@ -32,9 +33,14 @@ defmodule Inventory.Api.V1.CompanyController do
     render(conn, "show.json-api", data: company)
   end
 
-  def update(conn, %{"id" => id, "data" => data = %{"type" => "company", "attributes" => _company_params}}) do
-    company = Repo.get!(Company, id)
-    changeset = Company.changeset(company, Params.to_attributes(data))
+  def update(conn, %{"id" => id, "data" => data = %{"type" => "companies", "attributes" => company_params}}) do
+    current_user = Guardian.Plug.current_resource(conn)
+
+    company = Company
+           |> where(owner_id: ^current_user.id, id: ^id)
+           |> Repo.one!
+
+    changeset = Company.changeset(company, company_params)
 
     case Repo.update(changeset) do
       {:ok, company} ->
@@ -47,7 +53,11 @@ defmodule Inventory.Api.V1.CompanyController do
   end
 
   def delete(conn, %{"id" => id}) do
-    company = Repo.get!(Company, id)
+    current_user = Guardian.Plug.current_resource(conn)
+
+    company = Company
+           |> where(owner_id: ^current_user.id, id: ^id)
+           |> Repo.one!
 
     # Here we use delete! (with a bang) because we expect
     # it to always work (and if it does not, it will raise).
