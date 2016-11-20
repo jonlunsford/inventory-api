@@ -44,6 +44,16 @@ defmodule Inventory.Api.V1.CategoryControllerTest do
     assert json_response(conn, 200)["data"] == []
   end
 
+  test "lists all entries by company on index", %{conn: conn, user: user} do
+    company_id = relationships["company"]["data"]["id"]
+
+    Repo.insert!(%Category{name: "My Cat", company_id: company_id})
+
+    conn = get conn, "/api/v1/user/#{user.id}/companies/#{company_id}/categories"
+    response = List.first(json_response(conn, 200)["data"])
+    assert response["relationships"]["company"]["data"]["id"] == Integer.to_string(company_id)
+  end
+
   test "shows chosen resource", %{conn: conn} do
     category = Repo.insert! %Category{}
     conn = get conn, api_v1_category_path(conn, :show, category)
@@ -70,7 +80,10 @@ defmodule Inventory.Api.V1.CategoryControllerTest do
       }
     }
 
-    assert json_response(conn, 201)["data"]["id"]
+    response = json_response(conn, 201)
+
+    assert response["data"]["relationships"]["company"]["data"]
+    assert response["data"]["id"]
     assert Repo.get_by(Category, @valid_attrs)
   end
 

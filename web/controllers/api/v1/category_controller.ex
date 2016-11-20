@@ -6,13 +6,22 @@ defmodule Inventory.Api.V1.CategoryController do
 
   plug :scrub_params, "data" when action in [:create, :update]
 
+  def index(conn, %{"user_id" => _user_id, "company_id" => company_id}) do
+    categories = Category
+      |> where(company_id: ^company_id)
+      |> Repo.all
+
+    render(conn, "index.json-api", data: categories)
+  end
+
   def index(conn, _params) do
     categories = Repo.all(Category)
     render(conn, "index.json-api", data: categories)
   end
 
   def create(conn, %{"data" => data = %{"type" => "categories", "attributes" => _category_params}}) do
-    changeset = Category.changeset(%Category{}, Params.to_attributes(data))
+    params = Params.to_attributes(data)
+    changeset = Category.changeset(%Category{company_id: params["company_id"]}, params)
 
     case Repo.insert(changeset) do
       {:ok, category} ->

@@ -6,6 +6,14 @@ defmodule Inventory.Api.V1.CompanyController do
 
   plug :scrub_params, "data" when action in [:create, :update]
 
+  def index(conn, %{"user_id" => user_id}) do
+    categories = Company
+      |> where(owner_id: ^user_id)
+      |> Repo.all
+
+    render(conn, "index.json-api", data: categories)
+  end
+
   def index(conn, _params) do
     companies = Repo.all(Company)
     render(conn, "index.json-api", data: companies)
@@ -33,7 +41,7 @@ defmodule Inventory.Api.V1.CompanyController do
     render(conn, "show.json-api", data: company)
   end
 
-  def update(conn, %{"id" => id, "data" => data = %{"type" => "companies", "attributes" => company_params}}) do
+  def update(conn, %{"id" => id, "data" => _data = %{"type" => "companies", "attributes" => company_params}}) do
     current_user = Guardian.Plug.current_resource(conn)
 
     company = Company

@@ -13,7 +13,7 @@ defmodule Inventory.Category do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:name])
+    |> cast(params, [:name, :company_id])
     |> validate_required([:name])
   end
 end
