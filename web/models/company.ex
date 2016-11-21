@@ -5,6 +5,7 @@ defmodule Inventory.Company do
     field :title, :string
 
     belongs_to :owner, Inventory.User
+    has_many :categories, Inventory.Category
 
     timestamps()
   end
