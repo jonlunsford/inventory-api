@@ -27,9 +27,16 @@ defmodule Inventory.Api.V1.RegistrationControllerTest do
   end
 
   test "creates and renders resource with data is valid", %{ conn: conn } do
-    conn = post conn, api_v1_registration_path(conn, :create, %{data: %{type: "users", attributes: @valid_attrs}})
+    conn = post conn, api_v1_registration_path(conn, :create), %{
+      "meta" => %{},
+      "data" => %{
+        "type" => "users",
+        "attributes" => @valid_attrs
+      }
+    }
+
     assert json_response(conn, 201)["data"]["id"]
-    assert Repo.get_by(User, %{email: @valid_attrs[:email]})
+    assert Repo.get_by(User, email: "test@test.com")
   end
 
   test "does no create resource and renders errors when data is invalid", %{ conn: conn } do
