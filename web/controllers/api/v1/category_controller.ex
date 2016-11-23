@@ -2,6 +2,7 @@ defmodule Inventory.Api.V1.CategoryController do
   use Inventory.Web, :controller
 
   alias Inventory.Category
+  alias Inventory.CategoryInput
   alias JaSerializer.Params
 
   plug :scrub_params, "data" when action in [:create, :update]
@@ -25,6 +26,8 @@ defmodule Inventory.Api.V1.CategoryController do
 
     case Repo.insert(changeset) do
       {:ok, category} ->
+        category |> associate_inputs(params)
+
         conn
         |> put_status(:created)
         |> put_resp_header("location", api_v1_category_path(conn, :show, category))
@@ -63,6 +66,18 @@ defmodule Inventory.Api.V1.CategoryController do
     Repo.delete!(category)
 
     send_resp(conn, :no_content, "")
+  end
+
+  def associate_inputs(category, %{"inputs_ids" => inputs_ids}) do
+    inputs_ids
+    |> Enum.each(fn(id) -> associate_input(category, id) end)
+  end
+
+  def associate_inputs(_, _), do: :noop
+
+  def associate_input(category, input_id) do
+    CategoryInput.changeset(%CategoryInput{}, %{ category_id: category.id, input_id: input_id })
+    |> Repo.insert
   end
 
 end

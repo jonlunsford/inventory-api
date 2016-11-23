@@ -4,6 +4,7 @@ defmodule Inventory.Api.V1.CategoryControllerTest do
   alias Inventory.Category
   alias Inventory.Repo
   alias Inventory.User
+  alias Inventory.Input
 
   @valid_attrs %{name: "some content"}
   @invalid_attrs %{}
@@ -28,8 +29,22 @@ defmodule Inventory.Api.V1.CategoryControllerTest do
 
   defp relationships do
     company = Repo.insert!(%Inventory.Company{})
+    input_a = Repo.insert!(%Input{name: "My Input"})
+    input_b = Repo.insert!(%Input{name: "My Second Input"})
 
     %{
+      "inputs" => %{
+        "data" => [
+            %{
+            "type" => "inputs",
+            "id" => input_a.id
+          }, %{
+            "type" => "inputs",
+            "id" => input_b.id
+          }
+        ]
+      },
+
       "company" => %{
         "data" => %{
           "type" => "company",
@@ -80,11 +95,16 @@ defmodule Inventory.Api.V1.CategoryControllerTest do
       }
     }
 
+    category =
+      Repo.get_by(Category, @valid_attrs)
+      |> Repo.preload(:inputs)
+
     response = json_response(conn, 201)
 
     assert response["data"]["relationships"]["company"]["data"]
     assert response["data"]["id"]
-    assert Repo.get_by(Category, @valid_attrs)
+    assert List.first(category.inputs).name == "My Input"
+    assert List.last(category.inputs).name == "My Second Input"
   end
 
   test "does not create resource and renders errors when data is invalid", %{conn: conn} do

@@ -8,6 +8,9 @@ defmodule Inventory.Category do
     has_many :products_categories, Inventory.ProductCategory
     has_many :products, through: [:products_categories, :product]
 
+    has_many :categories_inputs, Inventory.CategoryInput
+    has_many :inputs, through: [:categories_inputs, :input]
+
     timestamps()
   end
 

@@ -22,20 +22,28 @@ defmodule Inventory.InputInsertTest do
   use Inventory.ConnCase
 
   alias Inventory.Product
+  alias Inventory.Category
   alias Inventory.Input
   alias Inventory.ProductInput
+  alias Inventory.CategoryInput
   alias Inventory.Repo
 
   setup do
     product = %Product{name: "Mac n Cheese"} |> Repo.insert!
     input = %Input{name: "beer_name"} |> Repo.insert!
+    category = %Category{name: "My Category"} |> Repo.insert!
+
+    %CategoryInput{
+      category_id: category.id,
+      input_id: input.id
+    } |> Repo.insert!
 
     %ProductInput{
       product_id: product.id,
       input_id: input.id
     } |> Repo.insert!
 
-    { :ok, input_id: input.id, product_id: product.id  }
+    { :ok, input_id: input.id, product_id: product.id, category_id: category.id  }
   end
 
   test "product added to input", context do
@@ -54,6 +62,15 @@ defmodule Inventory.InputInsertTest do
 
     assert input.name == "beer_name"
     assert Enum.count(input.products) == 1
+  end
+
+  test "input added to category", context do
+    input =
+      Repo.get(Input, context[:input_id])
+      |> Repo.preload(:categories)
+
+    assert input.name == "beer_name"
+    assert Enum.count(input.categories) == 1
   end
 
 end
