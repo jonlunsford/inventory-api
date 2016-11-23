@@ -2,10 +2,20 @@ defmodule Inventory.Api.V1.ProductController do
   use Inventory.Web, :controller
 
   alias Inventory.Product
+  alias Inventory.ProductCategory
+  alias Inventory.Category
   alias Inventory.ProductInput
   alias JaSerializer.Params
 
   plug :scrub_params, "data" when action in [:create, :update]
+
+  def index(conn, %{"category_id" => category_id}) do
+    assoc =
+      Repo.get(Category, category_id)
+      |> Repo.preload(:products)
+
+    render(conn, "index.json-api", data: assoc.products)
+  end
 
   def index(conn, _params) do
     products = Repo.all(Product)
@@ -18,7 +28,8 @@ defmodule Inventory.Api.V1.ProductController do
 
     case Repo.insert(changeset) do
       {:ok, product} ->
-        product |> associate_input(params)
+        product |> associate_inputs(params)
+        product |> associate_categories(params)
 
         conn
         |> put_status(:created)
@@ -60,10 +71,28 @@ defmodule Inventory.Api.V1.ProductController do
     send_resp(conn, :no_content, "")
   end
 
-  def associate_input(product, %{"input_id" => input_id}) do
-    build_assoc(product, :products_inputs, %{input_id: input_id})
+  def associate_inputs(product, %{"inputs_ids" => inputs_ids}) do
+    inputs_ids
+    |> Enum.each(fn(id) -> associate_input(product, id) end)
+  end
+
+  def associate_inputs(_, _), do: :noop
+
+  def associate_input(product, input_id) do
+    ProductInput.changeset(%ProductInput{}, %{ product_id: product.id, input_id: input_id })
     |> Repo.insert
   end
 
-  def associate_input(_, _), do: :noop
+  def associate_categories(product, %{"categories_ids" => categories_ids}) do
+    categories_ids
+    |> Enum.each(fn(id) -> associate_category(product, id) end)
+  end
+
+  def associate_categories(_, _), do: :noop
+
+  def associate_category(product, category_id) do
+    ProductCategory.changeset(%ProductCategory{}, %{ product_id: product.id, category_id: category_id })
+    |> Repo.insert
+  end
+
 end

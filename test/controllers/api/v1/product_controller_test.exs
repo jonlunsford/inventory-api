@@ -3,6 +3,8 @@ defmodule Inventory.Api.V1.ProductControllerTest do
 
   alias Inventory.Product
   alias Inventory.Repo
+  alias Inventory.Input
+  alias Inventory.Category
 
   @valid_attrs %{name: "some content"}
   @invalid_attrs %{}
@@ -16,21 +18,75 @@ defmodule Inventory.Api.V1.ProductControllerTest do
   end
 
   defp relationships do
-    input = Repo.insert!(%Inventory.Input{name: "My Input"})
+    input_a = Repo.insert!(%Input{name: "My Input"})
+    input_b = Repo.insert!(%Input{name: "My Second Input"})
+    category_a = Repo.insert!(%Category{name: "My Category"})
+    category_b = Repo.insert!(%Category{name: "My Second Category"})
 
     %{
-      "input" => %{
-        "data" => %{
-          "type" => "input",
-          "id" => input.id
-        }
+      "inputs" => %{
+        "data" => [
+            %{
+            "type" => "inputs",
+            "id" => input_a.id
+          }, %{
+            "type" => "inputs",
+            "id" => input_b.id
+          }
+        ]
       },
+
+      "categories" => %{
+        "data" => [
+            %{
+            "type" => "categories",
+            "id" => category_a.id
+          }, %{
+            "type" => "categories",
+            "id" => category_b.id
+          }
+        ]
+      }
+    }
+  end
+
+  defp category_relationship do
+    category = Repo.insert!(%Category{name: "My Third Category"})
+
+    %{
+      "categories" => %{
+        "data" => [
+            %{
+            "type" => "categories",
+            "id" => category.id
+          }
+        ]
+      }
     }
   end
 
   test "lists all entries on index", %{conn: conn} do
     conn = get conn, api_v1_product_path(conn, :index)
     assert json_response(conn, 200)["data"] == []
+  end
+
+  test "lists all entries by category on index", %{conn: conn} do
+    post conn, api_v1_product_path(conn, :create), %{
+      "meta" => %{},
+      "data" => %{
+        "type" => "products",
+        "attributes" => %{name: "one"},
+        "relationships" => category_relationship
+      }
+    }
+
+    product =
+      Repo.get_by(Product, %{name: "one"})
+      |> Repo.preload(:categories)
+
+    conn = get conn, api_v1_category_products_path(conn, :index, List.first(product.categories).id)
+    response = List.first(json_response(conn, 200)["data"])
+    assert response["attributes"]["name"] == "one"
   end
 
   test "shows chosen resource", %{conn: conn} do
@@ -60,11 +116,12 @@ defmodule Inventory.Api.V1.ProductControllerTest do
 
     product =
       Repo.get_by(Product, @valid_attrs)
-      |> Repo.preload(:inputs)
+      |> Repo.preload([:inputs, :categories])
 
     assert json_response(conn, 201)["data"]["id"]
     assert product.name == "some content"
     assert List.first(product.inputs).name == "My Input"
+    assert List.first(product.categories).name == "My Category"
   end
 
   test "does not create resource and renders errors when data is invalid", %{conn: conn} do
