@@ -3,9 +3,18 @@ defmodule Inventory.Api.V1.InputController do
 
   alias Inventory.Input
   alias Inventory.CategoryInput
+  alias Inventory.Category
   alias JaSerializer.Params
 
   plug :scrub_params, "data" when action in [:create, :update]
+
+  def index(conn, %{"category_id" => category_id}) do
+    assoc =
+      Repo.get(Category, category_id)
+      |> Repo.preload(:inputs)
+
+    render(conn, "index.json-api", data: assoc.inputs)
+  end
 
   def index(conn, _params) do
     inputs = Repo.all(Input)

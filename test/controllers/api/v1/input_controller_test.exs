@@ -35,9 +35,43 @@ defmodule Inventory.Api.V1.InputControllerTest do
     }
   end
 
+  defp category_relationship do
+    category = Repo.insert!(%Category{name: "My Third Category"})
+
+    %{
+      "categories" => %{
+        "data" => [
+            %{
+            "type" => "categories",
+            "id" => category.id
+          }
+        ]
+      }
+    }
+  end
+
   test "lists all entries on index", %{conn: conn} do
     conn = get conn, api_v1_input_path(conn, :index)
     assert json_response(conn, 200)["data"] == []
+  end
+
+  test "lists all entries by category on index", %{conn: conn} do
+    post conn, api_v1_input_path(conn, :create), %{
+      "meta" => %{},
+      "data" => %{
+        "type" => "inputs",
+        "attributes" => @valid_attrs,
+        "relationships" => category_relationship
+      }
+    }
+
+    input =
+      Repo.get_by(Input, @valid_attrs)
+      |> Repo.preload(:categories)
+
+    conn = get conn, api_v1_category_inputs_path(conn, :index, List.first(input.categories).id)
+    response = List.first(json_response(conn, 200)["data"])
+    assert response["attributes"]["name"] == "some content"
   end
 
   test "shows chosen resource", %{conn: conn} do
