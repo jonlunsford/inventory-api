@@ -16,7 +16,16 @@ defmodule Inventory.Api.V1.ProductControllerTest do
   end
 
   defp relationships do
-    %{}
+    input = Repo.insert!(%Inventory.Input{name: "My Input"})
+
+    %{
+      "input" => %{
+        "data" => %{
+          "type" => "input",
+          "id" => input.id
+        }
+      },
+    }
   end
 
   test "lists all entries on index", %{conn: conn} do
@@ -49,8 +58,13 @@ defmodule Inventory.Api.V1.ProductControllerTest do
       }
     }
 
+    product =
+      Repo.get_by(Product, @valid_attrs)
+      |> Repo.preload(:inputs)
+
     assert json_response(conn, 201)["data"]["id"]
-    assert Repo.get_by(Product, @valid_attrs)
+    assert product.name == "some content"
+    assert List.first(product.inputs).name == "My Input"
   end
 
   test "does not create resource and renders errors when data is invalid", %{conn: conn} do

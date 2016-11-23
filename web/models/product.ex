@@ -7,8 +7,8 @@ defmodule Inventory.Product do
     has_many :products_categories, Inventory.ProductCategory
     has_many :categories, through: [:products_categories, :category]
 
-    #has_many :products_fields, Inventory.ProductField
-    #has_many :fields, through: [:products_fields, :field]
+    has_many :products_inputs, Inventory.ProductInput
+    has_many :inputs, through: [:products_inputs, :input]
 
     timestamps()
   end

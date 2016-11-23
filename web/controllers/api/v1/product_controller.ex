@@ -2,6 +2,7 @@ defmodule Inventory.Api.V1.ProductController do
   use Inventory.Web, :controller
 
   alias Inventory.Product
+  alias Inventory.ProductInput
   alias JaSerializer.Params
 
   plug :scrub_params, "data" when action in [:create, :update]
@@ -12,10 +13,13 @@ defmodule Inventory.Api.V1.ProductController do
   end
 
   def create(conn, %{"data" => data = %{"type" => "products", "attributes" => _product_params}}) do
-    changeset = Product.changeset(%Product{}, Params.to_attributes(data))
+    params = Params.to_attributes(data)
+    changeset = Product.changeset(%Product{}, params)
 
     case Repo.insert(changeset) do
       {:ok, product} ->
+        product |> associate_input(params)
+
         conn
         |> put_status(:created)
         |> put_resp_header("location", api_v1_product_path(conn, :show, product))
@@ -56,4 +60,10 @@ defmodule Inventory.Api.V1.ProductController do
     send_resp(conn, :no_content, "")
   end
 
+  def associate_input(product, %{"input_id" => input_id}) do
+    build_assoc(product, :products_inputs, %{input_id: input_id})
+    |> Repo.insert
+  end
+
+  def associate_input(_, _), do: :noop
 end
