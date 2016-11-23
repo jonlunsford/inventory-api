@@ -3,6 +3,7 @@ defmodule Inventory.Api.V1.InputControllerTest do
 
   alias Inventory.Input
   alias Inventory.Repo
+  alias Inventory.Category
 
   @valid_attrs %{disabled: true, label: "some content", meta: %{}, name: "some content", value: "some content"}
   @invalid_attrs %{}
@@ -16,7 +17,22 @@ defmodule Inventory.Api.V1.InputControllerTest do
   end
 
   defp relationships do
-    %{}
+    category_a = Repo.insert!(%Category{name: "My Category"})
+    category_b = Repo.insert!(%Category{name: "My Second Category"})
+
+    %{
+      "categories" => %{
+        "data" => [
+            %{
+            "type" => "categories",
+            "id" => category_a.id
+          }, %{
+            "type" => "categories",
+            "id" => category_b.id
+          }
+        ]
+      }
+    }
   end
 
   test "lists all entries on index", %{conn: conn} do
@@ -53,8 +69,13 @@ defmodule Inventory.Api.V1.InputControllerTest do
       }
     }
 
+    input =
+      Repo.get_by(Input, @valid_attrs)
+      |> Repo.preload(:categories)
+
     assert json_response(conn, 201)["data"]["id"]
-    assert Repo.get_by(Input, @valid_attrs)
+    assert List.first(input.categories).name == "My Category"
+    assert List.last(input.categories).name == "My Second Category"
   end
 
   test "does not create resource and renders errors when data is invalid", %{conn: conn} do

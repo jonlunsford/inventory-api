@@ -9,9 +9,14 @@ defmodule Inventory.Api.V1.CategoryView do
     type: "company"
 
   has_many :products, link: :products_link
+  has_many :inputs, link: :inputs_link
 
   def products_link(category, conn) do
      api_v1_category_products_path(conn, :index, category.id)
+  end
+
+  def inputs_link(category, conn) do
+    api_v1_category_inputs_path(conn, :index, category.id)
   end
 
 end
