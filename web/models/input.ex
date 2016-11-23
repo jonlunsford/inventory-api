@@ -8,6 +8,9 @@ defmodule Inventory.Input do
     field :disabled, :boolean, default: false
     field :meta, :map
 
+    has_many :products_inputs, Inventory.ProductInput
+    has_many :products, through: [:products_inputs, :product]
+
     timestamps()
   end
 
