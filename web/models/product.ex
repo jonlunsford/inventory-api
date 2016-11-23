@@ -1,12 +1,14 @@
-defmodule Inventory.Category do
+defmodule Inventory.Product do
   use Inventory.Web, :model
 
-  schema "categories" do
+  schema "products" do
     field :name, :string
-    belongs_to :company, Inventory.Company
 
     has_many :products_categories, Inventory.ProductCategory
-    has_many :products, through: [:products_categories, :product]
+    has_many :categories, through: [:products_categories, :category]
+
+    #has_many :products_fields, Inventory.ProductField
+    #has_many :fields, through: [:products_fields, :field]
 
     timestamps()
   end
@@ -16,7 +18,7 @@ defmodule Inventory.Category do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:name, :company_id])
+    |> cast(params, [:name])
     |> validate_required([:name])
   end
 end
