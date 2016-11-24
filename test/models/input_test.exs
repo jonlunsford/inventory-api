@@ -3,7 +3,7 @@ defmodule Inventory.Api.V1.InputTest do
 
   alias Inventory.Input
 
-  @valid_attrs %{ disabled: true, label: "some content", meta: %{}, name: "some content", value: "some content"}
+  @valid_attrs %{ disabled: true, label: "some content", meta: %{}, name: "some content", value: "some content", input_type: "text"}
   @invalid_attrs %{}
 
   test "changeset with valid attributes" do

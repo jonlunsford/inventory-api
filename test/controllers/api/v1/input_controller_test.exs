@@ -5,7 +5,7 @@ defmodule Inventory.Api.V1.InputControllerTest do
   alias Inventory.Repo
   alias Inventory.Category
 
-  @valid_attrs %{disabled: true, label: "some content", meta: %{}, name: "some content", value: "some content"}
+  @valid_attrs %{disabled: true, label: "some content", meta: %{}, name: "some content", value: "some content", input_type: "text"}
   @invalid_attrs %{}
 
   setup do

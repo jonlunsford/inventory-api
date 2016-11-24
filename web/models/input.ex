@@ -7,6 +7,7 @@ defmodule Inventory.Input do
     field :value, :string
     field :disabled, :boolean, default: false
     field :meta, :map
+    field :input_type, :string
 
     has_many :products_inputs, Inventory.ProductInput
     has_many :products, through: [:products_inputs, :product]
@@ -22,7 +23,7 @@ defmodule Inventory.Input do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:name, :label, :value, :disabled, :meta])
-    |> validate_required([:name, :label, :value, :disabled, :meta])
+    |> cast(params, [:name, :label, :value, :disabled, :meta, :input_type])
+    |> validate_required([:name, :label, :value, :disabled, :meta, :input_type])
   end
 end
