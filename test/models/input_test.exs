@@ -24,53 +24,38 @@ defmodule Inventory.InputInsertTest do
   alias Inventory.Product
   alias Inventory.Category
   alias Inventory.Input
-  alias Inventory.ProductInput
-  alias Inventory.CategoryInput
   alias Inventory.Repo
 
   setup do
     product = %Product{name: "Mac n Cheese"} |> Repo.insert!
-    input = %Input{name: "beer_name"} |> Repo.insert!
     category = %Category{name: "My Category"} |> Repo.insert!
+    input_a = %Input{name: "My Input", product_id: product.id} |> Repo.insert!
+    input_b = %Input{name: "My Second Input", category_id: category.id} |> Repo.insert!
 
-    %CategoryInput{
-      category_id: category.id,
-      input_id: input.id
-    } |> Repo.insert!
-
-    %ProductInput{
+    { :ok,
+      input_a_id: input_a.id,
+      input_b_id: input_b.id,
       product_id: product.id,
-      input_id: input.id
-    } |> Repo.insert!
-
-    { :ok, input_id: input.id, product_id: product.id, category_id: category.id  }
-  end
-
-  test "product added to input", context do
-    product =
-      Repo.get(Product, context[:product_id])
-      |> Repo.preload(:inputs)
-
-    assert product.name == "Mac n Cheese"
-    assert Enum.count(product.inputs) == 1
+      category_id: category.id
+    }
   end
 
   test "input added to product", context do
     input =
-      Repo.get(Input, context[:input_id])
-      |> Repo.preload(:products)
+      Repo.get(Input, context[:input_a_id])
+      |> Repo.preload(:product)
 
-    assert input.name == "beer_name"
-    assert Enum.count(input.products) == 1
+    assert input.name == "My Input"
+    assert input.product.name == "Mac n Cheese"
   end
 
   test "input added to category", context do
     input =
-      Repo.get(Input, context[:input_id])
-      |> Repo.preload(:categories)
+      Repo.get(Input, context[:input_b_id])
+      |> Repo.preload(:category)
 
-    assert input.name == "beer_name"
-    assert Enum.count(input.categories) == 1
+    assert input.name == "My Second Input"
+    assert input.category.name == "My Category"
   end
 
 end
