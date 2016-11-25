@@ -2,7 +2,6 @@ defmodule Inventory.Api.V1.InputController do
   use Inventory.Web, :controller
 
   alias Inventory.Input
-  alias Inventory.CategoryInput
   alias Inventory.Category
   alias JaSerializer.Params
 
@@ -22,13 +21,10 @@ defmodule Inventory.Api.V1.InputController do
   end
 
   def create(conn, %{"data" => data = %{"type" => "inputs", "attributes" => _input_params}}) do
-    params = Params.to_attributes(data)
-    changeset = Input.changeset(%Input{}, params)
+    changeset = Input.changeset(%Input{}, Params.to_attributes(data))
 
     case Repo.insert(changeset) do
       {:ok, input} ->
-        input |> associate_categories(params)
-
         conn
         |> put_status(:created)
         |> put_resp_header("location", api_v1_input_path(conn, :show, input))
@@ -67,18 +63,6 @@ defmodule Inventory.Api.V1.InputController do
     Repo.delete!(input)
 
     send_resp(conn, :no_content, "")
-  end
-
-  def associate_categories(input, %{"categories_ids" => categories_ids}) do
-    categories_ids
-    |> Enum.each(fn(id) -> associate_category(input, id) end)
-  end
-
-  def associate_categories(_, _), do: :noop
-
-  def associate_category(input, category_id) do
-    CategoryInput.changeset(%CategoryInput{}, %{ input_id: input.id, category_id: category_id })
-    |> Repo.insert
   end
 
 end

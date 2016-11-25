@@ -17,35 +17,14 @@ defmodule Inventory.Api.V1.InputControllerTest do
   end
 
   defp relationships do
-    category_a = Repo.insert!(%Category{name: "My Category"})
-    category_b = Repo.insert!(%Category{name: "My Second Category"})
+    category = Repo.insert!(%Category{name: "My Category"})
 
     %{
-      "categories" => %{
-        "data" => [
-            %{
-            "type" => "categories",
-            "id" => category_a.id
-          }, %{
-            "type" => "categories",
-            "id" => category_b.id
-          }
-        ]
-      }
-    }
-  end
-
-  defp category_relationship do
-    category = Repo.insert!(%Category{name: "My Third Category"})
-
-    %{
-      "categories" => %{
-        "data" => [
-            %{
-            "type" => "categories",
-            "id" => category.id
-          }
-        ]
+      "category" => %{
+        "data" => %{
+          "type" => "category",
+          "id" => category.id
+        }
       }
     }
   end
@@ -61,15 +40,15 @@ defmodule Inventory.Api.V1.InputControllerTest do
       "data" => %{
         "type" => "inputs",
         "attributes" => @valid_attrs,
-        "relationships" => category_relationship
+        "relationships" => relationships
       }
     }
 
     input =
       Repo.get_by(Input, @valid_attrs)
-      |> Repo.preload(:categories)
+      |> Repo.preload(:category)
 
-    conn = get conn, api_v1_category_inputs_path(conn, :index, List.first(input.categories).id)
+    conn = get conn, api_v1_category_inputs_path(conn, :index, input.category.id)
     response = List.first(json_response(conn, 200)["data"])
     assert response["attributes"]["name"] == "some content"
   end
@@ -105,11 +84,10 @@ defmodule Inventory.Api.V1.InputControllerTest do
 
     input =
       Repo.get_by(Input, @valid_attrs)
-      |> Repo.preload(:categories)
+      |> Repo.preload(:category)
 
     assert json_response(conn, 201)["data"]["id"]
-    assert List.first(input.categories).name == "My Category"
-    assert List.last(input.categories).name == "My Second Category"
+    assert input.category.name == "My Category"
   end
 
   test "does not create resource and renders errors when data is invalid", %{conn: conn} do

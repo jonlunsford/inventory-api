@@ -3,7 +3,6 @@ defmodule Inventory.Api.V1.ProductControllerTest do
 
   alias Inventory.Product
   alias Inventory.Repo
-  alias Inventory.Input
   alias Inventory.Category
 
   @valid_attrs %{name: "some content"}
@@ -18,24 +17,10 @@ defmodule Inventory.Api.V1.ProductControllerTest do
   end
 
   defp relationships do
-    input_a = Repo.insert!(%Input{name: "My Input"})
-    input_b = Repo.insert!(%Input{name: "My Second Input"})
     category_a = Repo.insert!(%Category{name: "My Category"})
     category_b = Repo.insert!(%Category{name: "My Second Category"})
 
     %{
-      "inputs" => %{
-        "data" => [
-            %{
-            "type" => "inputs",
-            "id" => input_a.id
-          }, %{
-            "type" => "inputs",
-            "id" => input_b.id
-          }
-        ]
-      },
-
       "categories" => %{
         "data" => [
             %{
@@ -120,7 +105,6 @@ defmodule Inventory.Api.V1.ProductControllerTest do
 
     assert json_response(conn, 201)["data"]["id"]
     assert product.name == "some content"
-    assert List.first(product.inputs).name == "My Input"
     assert List.first(product.categories).name == "My Category"
   end
 

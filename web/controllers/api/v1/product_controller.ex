@@ -4,7 +4,6 @@ defmodule Inventory.Api.V1.ProductController do
   alias Inventory.Product
   alias Inventory.ProductCategory
   alias Inventory.Category
-  alias Inventory.ProductInput
   alias JaSerializer.Params
 
   plug :scrub_params, "data" when action in [:create, :update]
@@ -28,7 +27,6 @@ defmodule Inventory.Api.V1.ProductController do
 
     case Repo.insert(changeset) do
       {:ok, product} ->
-        product |> associate_inputs(params)
         product |> associate_categories(params)
 
         conn
@@ -69,18 +67,6 @@ defmodule Inventory.Api.V1.ProductController do
     Repo.delete!(product)
 
     send_resp(conn, :no_content, "")
-  end
-
-  def associate_inputs(product, %{"inputs_ids" => inputs_ids}) do
-    inputs_ids
-    |> Enum.each(fn(id) -> associate_input(product, id) end)
-  end
-
-  def associate_inputs(_, _), do: :noop
-
-  def associate_input(product, input_id) do
-    ProductInput.changeset(%ProductInput{}, %{ product_id: product.id, input_id: input_id })
-    |> Repo.insert
   end
 
   def associate_categories(product, %{"categories_ids" => categories_ids}) do

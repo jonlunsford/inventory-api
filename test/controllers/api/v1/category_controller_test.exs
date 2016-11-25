@@ -22,13 +22,15 @@ defmodule Inventory.Api.V1.CategoryControllerTest do
     on_exit fn ->
       Ecto.Adapters.SQL.Sandbox.checkout(Repo)
       Inventory.Repo.delete_all(User)
+      Inventory.Repo.delete_all(Category)
+      Inventory.Repo.delete_all(Input)
     end
 
     {:ok, %{conn: conn, user: user}}
   end
 
   defp relationships do
-    company = Repo.insert!(%Inventory.Company{})
+    company = Repo.insert!(%Inventory.Company{title: "My Company"})
     input_a = Repo.insert!(%Input{name: "My Input"})
     input_b = Repo.insert!(%Input{name: "My Second Input"})
 
@@ -95,16 +97,10 @@ defmodule Inventory.Api.V1.CategoryControllerTest do
       }
     }
 
-    category =
-      Repo.get_by(Category, @valid_attrs)
-      |> Repo.preload(:inputs)
-
     response = json_response(conn, 201)
 
     assert response["data"]["relationships"]["company"]["data"]
     assert response["data"]["id"]
-    assert List.first(category.inputs).name == "My Input"
-    assert List.last(category.inputs).name == "My Second Input"
   end
 
   test "does not create resource and renders errors when data is invalid", %{conn: conn} do
