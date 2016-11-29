@@ -11,6 +11,7 @@ defmodule Inventory.Input do
 
     belongs_to :product, Inventory.Product
     belongs_to :category, Inventory.Category
+    has_one :address, Inventory.Address
 
     timestamps()
   end

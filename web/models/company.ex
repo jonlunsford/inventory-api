@@ -6,6 +6,7 @@ defmodule Inventory.Company do
 
     belongs_to :owner, Inventory.User
     has_many :categories, Inventory.Category
+    has_one :address, Inventory.Address
 
     timestamps()
   end

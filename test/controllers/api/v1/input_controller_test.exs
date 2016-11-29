@@ -4,6 +4,7 @@ defmodule Inventory.Api.V1.InputControllerTest do
   alias Inventory.Input
   alias Inventory.Repo
   alias Inventory.Category
+  alias Inventory.Product
 
   @valid_attrs %{disabled: true, label: "some content", meta: %{}, name: "some content", value: "some content", input_type: "text"}
   @invalid_attrs %{}
@@ -18,12 +19,19 @@ defmodule Inventory.Api.V1.InputControllerTest do
 
   defp relationships do
     category = Repo.insert!(%Category{name: "My Category"})
+    product = Repo.insert!(%Product{name: "My Product"})
 
     %{
       "category" => %{
         "data" => %{
           "type" => "category",
           "id" => category.id
+        }
+      },
+      "product" => %{
+        "data" => %{
+          "type" => "product",
+          "id" => product.id
         }
       }
     }

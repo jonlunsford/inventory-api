@@ -49,7 +49,12 @@ defmodule Inventory.Router do
         resources "/inputs", InputController, only: [:index], as: :inputs
       end
 
-      resources "/companies", CompanyController, except: [:new, :edit]
+
+      resources "/companies", CompanyController, except: [:new, :edit] do
+        resources "/address", AddressController, only: [:index], as: :address
+      end
+
+      resources "/addresses", AddressController, except: [:new, :edit]
       resources "/inputs", InputController, except: [:new, :edit]
       resources "/rooms", RoomController, except: [:new, :edit]
       resources "/messages", MessageController, except: [:new, :edit]
