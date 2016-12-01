@@ -4,6 +4,7 @@ defmodule Inventory.Api.V1.ProductController do
   alias Inventory.Product
   alias Inventory.ProductCategory
   alias Inventory.Category
+  alias Inventory.Input
   alias JaSerializer.Params
 
   plug :scrub_params, "data" when action in [:create, :update]
@@ -19,6 +20,28 @@ defmodule Inventory.Api.V1.ProductController do
   def index(conn, _params) do
     products = Repo.all(Product)
     render(conn, "index.json-api", data: products)
+  end
+
+  def new(conn, %{"category_id" => category_id}) do
+    category =
+      Repo.get(Category, category_id)
+      |> Repo.preload(:inputs)
+
+    changeset = Product.changeset(%Product{}, %{name: "New #{category.name} Inventory"})
+
+    case Repo.insert(changeset) do
+      {:ok, product} ->
+        product |> copy_inputs(category.inputs)
+
+        conn
+        |> put_status(:created)
+        |> put_resp_header("location", api_v1_product_path(conn, :show, product))
+        |> render("show.json-api", data: product)
+      {:error, changeset} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> render(:errors, data: changeset)
+    end
   end
 
   def create(conn, %{"data" => data = %{"type" => "products", "attributes" => _product_params}}) do
@@ -78,6 +101,20 @@ defmodule Inventory.Api.V1.ProductController do
 
   def associate_category(product, category_id) do
     ProductCategory.changeset(%ProductCategory{}, %{ product_id: product.id, category_id: category_id })
+    |> Repo.insert
+  end
+
+  def copy_inputs(product, inputs) do
+    inputs
+    |> Enum.each(fn(input) -> copy_input(product, input) end)
+  end
+
+  def copy_input(product, input) do
+    params =
+      input
+      |> Map.take([:name, :label, :value, :disabled, :meta, :input_type])
+
+    Input.changeset(%Input{product_id: product.id}, params)
     |> Repo.insert
   end
 

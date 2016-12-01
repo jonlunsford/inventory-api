@@ -4,7 +4,7 @@ defmodule Inventory.Api.V1.AddressControllerTest do
   alias Inventory.Address
   alias Inventory.Repo
 
-  @valid_attrs %{city: "some content", country: "some content", description: "some content", lat: "120.5", line_1: "some content", line_2: "some content", long: "120.5", phone: "some content", state: "some content", zip: 42}
+  @valid_attrs %{city: "some content", country: "some content", description: "some content", lat: "120.5", line1: "some content", line2: "some content", long: "120.5", phone: "some content", state: "some content", zip: 42}
   @invalid_attrs %{}
 
   setup do
@@ -71,8 +71,8 @@ defmodule Inventory.Api.V1.AddressControllerTest do
     assert data["attributes"]["zip"] == address.zip
     assert data["attributes"]["lat"] == address.lat
     assert data["attributes"]["long"] == address.long
-    assert data["attributes"]["line_1"] == address.line_1
-    assert data["attributes"]["line_2"] == address.line_2
+    assert data["attributes"]["line1"] == address.line1
+    assert data["attributes"]["line2"] == address.line2
     assert data["attributes"]["phone"] == address.phone
     assert data["attributes"]["description"] == address.description
     assert data["attributes"]["company_id"] == address.company_id

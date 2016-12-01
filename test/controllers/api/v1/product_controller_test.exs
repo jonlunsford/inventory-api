@@ -4,6 +4,7 @@ defmodule Inventory.Api.V1.ProductControllerTest do
   alias Inventory.Product
   alias Inventory.Repo
   alias Inventory.Category
+  alias Inventory.Input
 
   @valid_attrs %{name: "some content"}
   @invalid_attrs %{}
@@ -55,6 +56,7 @@ defmodule Inventory.Api.V1.ProductControllerTest do
     assert json_response(conn, 200)["data"] == []
   end
 
+
   test "lists all entries by category on index", %{conn: conn} do
     post conn, api_v1_product_path(conn, :create), %{
       "meta" => %{},
@@ -81,6 +83,28 @@ defmodule Inventory.Api.V1.ProductControllerTest do
     assert data["id"] == "#{product.id}"
     assert data["type"] == "product"
     assert data["attributes"]["name"] == product.name
+  end
+
+  test "copies category inputs to itself", %{conn: conn} do
+    category = Repo.insert! %Category{name: "Parent Category"}
+    Repo.insert %Input{name: "copied_input", label: "Copied Input", value: "Copied Value", input_type: "text", category_id: category.id}
+
+    conn = get conn, api_v1_product_path(conn, :new, %{category_id: category.id})
+    response = json_response(conn, 201)["data"]
+    assert response["attributes"]["name"] == "New Parent Category Inventory"
+
+    product =
+      Repo.get(Product, response["id"])
+      |> Repo.preload([:inputs])
+
+    category =
+      Repo.get(Category, category.id)
+      |> Repo.preload(:inputs)
+
+    assert List.first(product.inputs).product_id == product.id
+    assert List.first(product.inputs).category_id == nil
+    assert List.first(category.inputs).product_id == nil
+    assert List.first(category.inputs).category_id == category.id
   end
 
   test "does not show resource and instead throw error when id is nonexistent", %{conn: conn} do

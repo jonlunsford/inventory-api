@@ -40,7 +40,7 @@ defmodule Inventory.Router do
         end
       end
 
-      resources "/products", ProductController, except: [:new, :edit] do
+      resources "/products", ProductController, except: [:edit] do
         resources "/inputs", InputController, only: [:index], as: :inputs
       end
 

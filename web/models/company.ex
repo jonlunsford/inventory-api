@@ -5,8 +5,8 @@ defmodule Inventory.Company do
     field :title, :string
 
     belongs_to :owner, Inventory.User
-    has_many :categories, Inventory.Category
-    has_one :address, Inventory.Address
+    has_many :categories, Inventory.Category, on_delete: :delete_all
+    has_one :address, Inventory.Address, on_delete: :delete_all
 
     timestamps()
   end
