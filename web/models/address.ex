@@ -8,8 +8,8 @@ defmodule Inventory.Address do
     field :zip, :integer
     field :lat, :float
     field :long, :float
-    field :line_1, :string
-    field :line_2, :string
+    field :line1, :string
+    field :line2, :string
     field :phone, :string
     field :description, :string
     belongs_to :company, Inventory.Company
@@ -23,7 +23,7 @@ defmodule Inventory.Address do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:city, :state, :country, :zip, :lat, :long, :line_1, :line_2, :phone, :description, :company_id, :input_id])
+    |> cast(params, [:city, :state, :country, :zip, :lat, :long, :line1, :line2, :phone, :description, :company_id, :input_id])
     |> validate_required([:city, :state, :zip])
   end
 end
