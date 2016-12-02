@@ -31,12 +31,16 @@ defmodule Inventory.Api.V1.ProductController do
 
     case Repo.insert(changeset) do
       {:ok, product} ->
-        product |> copy_inputs(category.inputs)
+        product |> associate_category(category_id)
+        response = Task.async(fn -> copy_inputs(product, category.inputs) end)
 
-        conn
-        |> put_status(:created)
-        |> put_resp_header("location", api_v1_product_path(conn, :show, product))
-        |> render("show.json-api", data: product)
+        case Task.await(response) do
+          :ok ->
+            conn
+            |> put_status(:created)
+            |> put_resp_header("location", api_v1_product_path(conn, :show, product))
+            |> render("show.json-api", data: product)
+        end
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)

@@ -7,7 +7,7 @@ defmodule Inventory.Product do
     has_many :products_categories, Inventory.ProductCategory
     has_many :categories, through: [:products_categories, :category]
 
-    has_many :inputs, Inventory.Input
+    has_many :inputs, Inventory.Input, on_delete: :delete_all
 
     timestamps()
   end

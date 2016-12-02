@@ -11,7 +11,7 @@ defmodule Inventory.Input do
 
     belongs_to :product, Inventory.Product, on_replace: :nilify
     belongs_to :category, Inventory.Category, on_replace: :nilify
-    has_one :address, Inventory.Address, on_replace: :nilify
+    has_one :address, Inventory.Address, on_delete: :delete_all
 
     timestamps()
   end

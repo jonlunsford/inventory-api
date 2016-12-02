@@ -95,7 +95,7 @@ defmodule Inventory.Api.V1.ProductControllerTest do
 
     product =
       Repo.get(Product, response["id"])
-      |> Repo.preload([:inputs])
+      |> Repo.preload([:inputs, :categories])
 
     category =
       Repo.get(Category, category.id)
@@ -105,6 +105,7 @@ defmodule Inventory.Api.V1.ProductControllerTest do
     assert List.first(product.inputs).category_id == nil
     assert List.first(category.inputs).product_id == nil
     assert List.first(category.inputs).category_id == category.id
+    assert List.first(product.categories).id == category.id
   end
 
   test "does not show resource and instead throw error when id is nonexistent", %{conn: conn} do
