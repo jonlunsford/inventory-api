@@ -1,26 +1,21 @@
 defmodule Inventory.Api.V1.CompanyController do
   use Inventory.Web, :controller
+  use Inventory.Api.V1.ApplicationController
 
   alias Inventory.Company
   alias JaSerializer.Params
 
   plug :scrub_params, "data" when action in [:create, :update]
 
-  def index(conn, %{"user_id" => user_id}) do
-    categories = Company
-      |> where(owner_id: ^user_id)
+  def index(conn, _params, current_user) do
+    companies = Company
+      |> where(owner_id: ^current_user.id)
       |> Repo.all
 
-    render(conn, "index.json-api", data: categories)
-  end
-
-  def index(conn, _params) do
-    companies = Repo.all(Company)
     render(conn, "index.json-api", data: companies)
   end
 
-  def create(conn, %{"data" => data = %{"type" => "companies", "attributes" => _company_params}}) do
-    current_user = Guardian.Plug.current_resource(conn)
+  def create(conn, %{"data" => data = %{"type" => "companies", "attributes" => _company_params}}, current_user) do
     changeset = Company.changeset(%Company{owner_id: current_user.id}, Params.to_attributes(data))
 
     case Repo.insert(changeset) do
@@ -36,14 +31,12 @@ defmodule Inventory.Api.V1.CompanyController do
     end
   end
 
-  def show(conn, %{"id" => id}) do
+  def show(conn, %{"id" => id}, _current_user) do
     company = Repo.get!(Company, id)
     render(conn, "show.json-api", data: company)
   end
 
-  def update(conn, %{"id" => id, "data" => _data = %{"type" => "companies", "attributes" => company_params}}) do
-    current_user = Guardian.Plug.current_resource(conn)
-
+  def update(conn, %{"id" => id, "data" => _data = %{"type" => "companies", "attributes" => company_params}}, current_user) do
     company = Company
            |> where(owner_id: ^current_user.id, id: ^id)
            |> Repo.one!
@@ -60,9 +53,7 @@ defmodule Inventory.Api.V1.CompanyController do
     end
   end
 
-  def delete(conn, %{"id" => id}) do
-    current_user = Guardian.Plug.current_resource(conn)
-
+  def delete(conn, %{"id" => id}, current_user) do
     company = Company
            |> where(owner_id: ^current_user.id, id: ^id)
            |> Repo.one!
