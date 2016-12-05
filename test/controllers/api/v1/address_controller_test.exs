@@ -17,7 +17,6 @@ defmodule Inventory.Api.V1.AddressControllerTest do
 
   defp relationships do
     company = Repo.insert!(%Inventory.Company{})
-    input = Repo.insert!(%Inventory.Input{})
 
     %{
       "company" => %{
@@ -25,13 +24,7 @@ defmodule Inventory.Api.V1.AddressControllerTest do
           "type" => "company",
           "id" => company.id
         }
-      },
-      "input" => %{
-        "data" => %{
-          "type" => "input",
-          "id" => input.id
-        }
-      },
+      }
     }
   end
 
@@ -76,7 +69,6 @@ defmodule Inventory.Api.V1.AddressControllerTest do
     assert data["attributes"]["phone"] == address.phone
     assert data["attributes"]["description"] == address.description
     assert data["attributes"]["company_id"] == address.company_id
-    assert data["attributes"]["input_id"] == address.input_id
   end
 
   test "does not show resource and instead throw error when id is nonexistent", %{conn: conn} do

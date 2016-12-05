@@ -2,6 +2,7 @@ defmodule Inventory.Api.V1.AddressController do
   use Inventory.Web, :controller
 
   alias Inventory.Address
+  alias Inventory.Input
   alias JaSerializer.Params
 
   plug :scrub_params, "data" when action in [:create, :update]
@@ -12,6 +13,14 @@ defmodule Inventory.Api.V1.AddressController do
       |> Repo.all
 
     render(conn, "index.json-api", data: addresses)
+  end
+
+  def index(conn, %{"input_id" => input_id}) do
+    input =
+      Repo.get(Input, input_id)
+      |> Repo.preload(:address)
+
+    render(conn, "index.json-api", data: input.address || [])
   end
 
   def index(conn, _params) do

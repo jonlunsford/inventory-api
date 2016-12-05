@@ -1,10 +1,12 @@
 defmodule Inventory.Api.V1.ProductControllerTest do
   use Inventory.ConnCase
 
+
   alias Inventory.Product
   alias Inventory.Repo
   alias Inventory.Category
   alias Inventory.Input
+  alias Inventory.Address
 
   @valid_attrs %{name: "some content"}
   @invalid_attrs %{}
@@ -87,7 +89,10 @@ defmodule Inventory.Api.V1.ProductControllerTest do
 
   test "copies category inputs to itself", %{conn: conn} do
     category = Repo.insert! %Category{name: "Parent Category"}
-    Repo.insert %Input{name: "copied_input", label: "Copied Input", value: "Copied Value", input_type: "text", category_id: category.id}
+    address = Repo.insert! %Address{city: "City", state: "State", zip: 666}
+
+    input = %Input{name: "copied_input", label: "Copied Input", value: "Copied Value", input_type: "text", category_id: category.id, address_id: address.id}
+    |> Repo.insert!
 
     conn = get conn, api_v1_product_path(conn, :new, %{category_id: category.id})
     response = json_response(conn, 201)["data"]
@@ -95,7 +100,8 @@ defmodule Inventory.Api.V1.ProductControllerTest do
 
     product =
       Repo.get(Product, response["id"])
-      |> Repo.preload([:inputs, :categories])
+      |> Repo.preload([inputs: :address])
+      |> Repo.preload(:categories)
 
     category =
       Repo.get(Category, category.id)
@@ -106,6 +112,8 @@ defmodule Inventory.Api.V1.ProductControllerTest do
     assert List.first(category.inputs).product_id == nil
     assert List.first(category.inputs).category_id == category.id
     assert List.first(product.categories).id == category.id
+    assert List.first(product.inputs).address.city == "City"
+    assert List.first(product.inputs).address.id != input.address_id
   end
 
   test "does not show resource and instead throw error when id is nonexistent", %{conn: conn} do

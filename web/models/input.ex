@@ -11,7 +11,7 @@ defmodule Inventory.Input do
 
     belongs_to :product, Inventory.Product, on_replace: :nilify
     belongs_to :category, Inventory.Category, on_replace: :nilify
-    has_one :address, Inventory.Address, on_delete: :delete_all
+    belongs_to :address, Inventory.Address, on_replace: :nilify
 
     timestamps()
   end
@@ -21,7 +21,7 @@ defmodule Inventory.Input do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:name, :label, :value, :disabled, :meta, :input_type, :category_id, :product_id])
+    |> cast(params, [:name, :label, :value, :disabled, :meta, :input_type, :category_id, :product_id, :address_id])
     |> validate_required([:name, :label, :disabled, :input_type])
   end
 end

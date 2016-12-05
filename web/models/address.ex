@@ -13,7 +13,7 @@ defmodule Inventory.Address do
     field :phone, :string
     field :description, :string
     belongs_to :company, Inventory.Company
-    belongs_to :input, Inventory.Input
+    has_one :input, Inventory.Input, on_delete: :delete_all
 
     timestamps()
   end
@@ -23,7 +23,7 @@ defmodule Inventory.Address do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:city, :state, :country, :zip, :lat, :long, :line1, :line2, :phone, :description, :company_id, :input_id])
+    |> cast(params, [:city, :state, :country, :zip, :lat, :long, :line1, :line2, :phone, :description, :company_id])
     |> validate_required([:city, :state, :zip])
   end
 end

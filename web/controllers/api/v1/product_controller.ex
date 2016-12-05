@@ -5,6 +5,7 @@ defmodule Inventory.Api.V1.ProductController do
   alias Inventory.ProductCategory
   alias Inventory.Category
   alias Inventory.Input
+  alias Inventory.Address
   alias JaSerializer.Params
 
   plug :scrub_params, "data" when action in [:create, :update]
@@ -118,8 +119,23 @@ defmodule Inventory.Api.V1.ProductController do
       input
       |> Map.take([:name, :label, :value, :disabled, :meta, :input_type])
 
-    Input.changeset(%Input{product_id: product.id}, params)
+    address = copied_input_address(%{ address_id: input.address_id });
+
+    Input.changeset(%Input{product_id: product.id, address_id: address.id }, params)
     |> Repo.insert
+  end
+
+  def copied_input_address(%{ address_id: address_id }) when is_integer(address_id) do
+    params =
+      Repo.get(Address, address_id)
+      |> Map.take([:city, :state, :country, :zip, :lat, :long, :line1, :line2, :phone, :description])
+
+    Address.changeset(%Address{}, params)
+    |> Repo.insert!
+  end
+
+  def copied_input_address(_) do
+    %{id: nil}
   end
 
 end
