@@ -27,9 +27,9 @@ defmodule Inventory.Router do
     pipe_through :api_auth
 
     scope "/v1", V1, as: :v1 do
-      get "/user/current", UserController, :current
+      get "/users/current", UserController, :current
 
-      resources "/user", UserController, only: [:show, :index] do
+      resources "/users", UserController, only: [:show, :index, :delete] do
 
         resources "/companies", CompanyController, only: [:index], as: :companies do
           resources "/categories", CategoryController, only: [:index], as: :categories

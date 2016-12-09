@@ -66,7 +66,7 @@ defmodule Inventory.Api.V1.CategoryControllerTest do
 
     Repo.insert!(%Category{name: "My Cat", company_id: company_id})
 
-    conn = get conn, "/api/v1/user/#{user.id}/companies/#{company_id}/categories"
+    conn = get conn, "/api/v1/users/#{user.id}/companies/#{company_id}/categories"
     response = List.first(json_response(conn, 200)["data"])
     assert response["relationships"]["company"]["data"]["id"] == Integer.to_string(company_id)
   end

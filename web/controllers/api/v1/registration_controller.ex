@@ -16,7 +16,7 @@ defmodule Inventory.Api.V1.RegistrationController do
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
-        |> render(UserView, "errors.json-api", changeset: changeset)
+        |> render(UserView, "errors.json-api", data: changeset)
     end
   end
 end
