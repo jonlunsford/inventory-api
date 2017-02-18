@@ -48,7 +48,7 @@ defmodule Inventory.Api.V1.InputControllerTest do
       "data" => %{
         "type" => "inputs",
         "attributes" => @valid_attrs,
-        "relationships" => relationships
+        "relationships" => relationships()
       }
     }
 
@@ -86,7 +86,7 @@ defmodule Inventory.Api.V1.InputControllerTest do
       "data" => %{
         "type" => "inputs",
         "attributes" => @valid_attrs,
-        "relationships" => relationships
+        "relationships" => relationships()
       }
     }
 
@@ -104,7 +104,7 @@ defmodule Inventory.Api.V1.InputControllerTest do
       "data" => %{
         "type" => "inputs",
         "attributes" => @invalid_attrs,
-        "relationships" => relationships
+        "relationships" => relationships()
       }
     }
 
@@ -119,7 +119,7 @@ defmodule Inventory.Api.V1.InputControllerTest do
         "type" => "inputs",
         "id" => input.id,
         "attributes" => @valid_attrs,
-        "relationships" => relationships
+        "relationships" => relationships()
       }
     }
 
@@ -135,7 +135,7 @@ defmodule Inventory.Api.V1.InputControllerTest do
         "type" => "inputs",
         "id" => input.id,
         "attributes" => @invalid_attrs,
-        "relationships" => relationships
+        "relationships" => relationships()
       }
     }
 

@@ -63,7 +63,7 @@ defmodule Inventory.Api.V1.MessageControllerTest do
       "data" => %{
         "type" => "messages",
         "attributes" => @valid_attrs,
-        "relationships" => relationships
+        "relationships" => relationships()
       }
     }
 
@@ -77,7 +77,7 @@ defmodule Inventory.Api.V1.MessageControllerTest do
       "data" => %{
         "type" => "messages",
         "attributes" => @invalid_attrs,
-        "relationships" => relationships
+        "relationships" => relationships()
       }
     }
 
@@ -92,7 +92,7 @@ defmodule Inventory.Api.V1.MessageControllerTest do
         "type" => "messages",
         "id" => message.id,
         "attributes" => @valid_attrs,
-        "relationships" => relationships
+        "relationships" => relationships()
       }
     }
 
@@ -108,7 +108,7 @@ defmodule Inventory.Api.V1.MessageControllerTest do
         "type" => "messages",
         "id" => message.id,
         "attributes" => @invalid_attrs,
-        "relationships" => relationships
+        "relationships" => relationships()
       }
     }
 

@@ -39,7 +39,7 @@ defmodule Inventory.Api.V1.AddressControllerTest do
       "data" => %{
         "type" => "addresses",
         "attributes" => @valid_attrs,
-        "relationships" => relationships
+        "relationships" => relationships()
       }
     }
 
@@ -83,7 +83,7 @@ defmodule Inventory.Api.V1.AddressControllerTest do
       "data" => %{
         "type" => "addresses",
         "attributes" => @valid_attrs,
-        "relationships" => relationships
+        "relationships" => relationships()
       }
     }
 
@@ -97,7 +97,7 @@ defmodule Inventory.Api.V1.AddressControllerTest do
       "data" => %{
         "type" => "addresses",
         "attributes" => @invalid_attrs,
-        "relationships" => relationships
+        "relationships" => relationships()
       }
     }
 
@@ -112,7 +112,7 @@ defmodule Inventory.Api.V1.AddressControllerTest do
         "type" => "addresses",
         "id" => address.id,
         "attributes" => @valid_attrs,
-        "relationships" => relationships
+        "relationships" => relationships()
       }
     }
 
@@ -128,7 +128,7 @@ defmodule Inventory.Api.V1.AddressControllerTest do
         "type" => "addresses",
         "id" => address.id,
         "attributes" => @invalid_attrs,
-        "relationships" => relationships
+        "relationships" => relationships()
       }
     }
 

@@ -65,7 +65,7 @@ defmodule Inventory.Api.V1.ProductControllerTest do
       "data" => %{
         "type" => "products",
         "attributes" => %{name: "one"},
-        "relationships" => category_relationship
+        "relationships" => category_relationship()
       }
     }
 
@@ -128,7 +128,7 @@ defmodule Inventory.Api.V1.ProductControllerTest do
       "data" => %{
         "type" => "products",
         "attributes" => @valid_attrs,
-        "relationships" => relationships
+        "relationships" => relationships()
       }
     }
 
@@ -147,7 +147,7 @@ defmodule Inventory.Api.V1.ProductControllerTest do
       "data" => %{
         "type" => "products",
         "attributes" => @invalid_attrs,
-        "relationships" => relationships
+        "relationships" => relationships()
       }
     }
 
@@ -162,7 +162,7 @@ defmodule Inventory.Api.V1.ProductControllerTest do
         "type" => "products",
         "id" => product.id,
         "attributes" => @valid_attrs,
-        "relationships" => relationships
+        "relationships" => relationships()
       }
     }
 
@@ -178,7 +178,7 @@ defmodule Inventory.Api.V1.ProductControllerTest do
         "type" => "products",
         "id" => product.id,
         "attributes" => @invalid_attrs,
-        "relationships" => relationships
+        "relationships" => relationships()
       }
     }
 

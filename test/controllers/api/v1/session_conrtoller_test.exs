@@ -5,13 +5,6 @@ defmodule Inventory.Api.V1.SessionControllerTest do
   alias Inventory.User
   alias Inventory.Repo
 
-  @valid_attrs %{
-    email: "test@example.com",
-    password: "password"
-  }
-
-  @invalid_attrs %{}
-
   setup %{conn: conn} do
     User.changeset(%User{}, %{email: "test@example.com", password: "password", password_confirmation: "password"})
     |> Repo.insert!

@@ -62,7 +62,7 @@ defmodule Inventory.Api.V1.CategoryControllerTest do
   end
 
   test "lists all entries by company on index", %{conn: conn, user: user} do
-    company_id = relationships["company"]["data"]["id"]
+    company_id = relationships()["company"]["data"]["id"]
 
     Repo.insert!(%Category{name: "My Cat", company_id: company_id})
 
@@ -93,7 +93,7 @@ defmodule Inventory.Api.V1.CategoryControllerTest do
       "data" => %{
         "type" => "categories",
         "attributes" => @valid_attrs,
-        "relationships" => relationships
+        "relationships" => relationships()
       }
     }
 
@@ -109,7 +109,7 @@ defmodule Inventory.Api.V1.CategoryControllerTest do
       "data" => %{
         "type" => "categories",
         "attributes" => @invalid_attrs,
-        "relationships" => relationships
+        "relationships" => relationships()
       }
     }
 
@@ -124,7 +124,7 @@ defmodule Inventory.Api.V1.CategoryControllerTest do
         "type" => "categories",
         "id" => category.id,
         "attributes" => @valid_attrs,
-        "relationships" => relationships
+        "relationships" => relationships()
       }
     }
 
@@ -140,7 +140,7 @@ defmodule Inventory.Api.V1.CategoryControllerTest do
         "type" => "categories",
         "id" => category.id,
         "attributes" => @invalid_attrs,
-        "relationships" => relationships
+        "relationships" => relationships()
       }
     }
 

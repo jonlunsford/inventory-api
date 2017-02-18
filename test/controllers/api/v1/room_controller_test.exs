@@ -79,7 +79,7 @@ defmodule Inventory.Api.V1.RoomControllerTest do
       "data" => %{
         "type" => "rooms",
         "attributes" => @valid_attrs,
-        "relationships" => relationships
+        "relationships" => relationships()
       }
     }
 

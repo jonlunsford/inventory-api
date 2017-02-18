@@ -56,7 +56,7 @@ defmodule Inventory.Api.V1.CompanyControllerTest do
       "data" => %{
         "type" => "companies",
         "attributes" => @valid_attrs,
-        "relationships" => relationships
+        "relationships" => relationships()
       }
     }
 
@@ -70,7 +70,7 @@ defmodule Inventory.Api.V1.CompanyControllerTest do
       "data" => %{
         "type" => "companies",
         "attributes" => @invalid_attrs,
-        "relationships" => relationships
+        "relationships" => relationships()
       }
     }
 
@@ -85,7 +85,7 @@ defmodule Inventory.Api.V1.CompanyControllerTest do
         "type" => "companies",
         "id" => company.id,
         "attributes" => @valid_attrs,
-        "relationships" => relationships
+        "relationships" => relationships()
       }
     }
 
@@ -101,7 +101,7 @@ defmodule Inventory.Api.V1.CompanyControllerTest do
         "type" => "companies",
         "id" => company.id,
         "attributes" => @invalid_attrs,
-        "relationships" => relationships
+        "relationships" => relationships()
       }
     }
 
