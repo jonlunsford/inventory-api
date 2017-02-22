@@ -8,6 +8,7 @@ defmodule Inventory.User do
     field :password, :string, virtual: true
     field :password_confirmation, :string, virtual: true
 
+    has_many :companies, Inventory.Company, on_delete: :delete_all, foreign_key: :owner_id
     has_many :messags, Inventory.Message
     belongs_to :room, Inventory.Room
 

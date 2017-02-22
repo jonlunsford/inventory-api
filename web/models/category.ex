@@ -3,10 +3,10 @@ defmodule Inventory.Category do
 
   schema "categories" do
     field :name, :string
-    belongs_to :company, Inventory.Company
 
+    belongs_to :company, Inventory.Company, on_replace: :delete
     has_many :products_categories, Inventory.ProductCategory
-    has_many :products, through: [:products_categories, :product]
+    has_many :products, through: [:products_categories, :product], on_delete: :delete_all
 
     has_many :inputs, Inventory.Input
   end
