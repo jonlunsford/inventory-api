@@ -1,6 +1,14 @@
 defmodule Inventory.Router do
   use Inventory.Web, :router
 
+  pipeline :browser do
+    plug :accepts, ["html"]
+    plug :fetch_session
+    plug :fetch_flash
+    plug :protect_from_forgery
+    plug :put_secure_browser_headers
+  end
+
   pipeline :api do
     plug :accepts, ["json-api", "json"]
     plug JaSerializer.Deserializer
@@ -10,6 +18,12 @@ defmodule Inventory.Router do
     plug JaSerializer.ContentTypeNegotiation
     plug Guardian.Plug.VerifyHeader, realm: "Bearer"
     plug Guardian.Plug.LoadResource
+  end
+
+  scope "/", Inventory do
+    pipe_through :browser
+
+    get "/", RegistrationController, :new
   end
 
   scope "/api", Inventory.Api, as: :api do

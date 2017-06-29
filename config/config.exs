@@ -13,7 +13,7 @@ config :inventory,
 config :inventory, Inventory.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "Q0ZLrEwSsDFwQJ+N2cKTcqR4QdU6xQ1DSDjNJYJ+5rYrcoA9IL1YWDMTSHpJNi0n",
-  render_errors: [view: Inventory.ErrorView, accepts: ~w(json json-api)],
+  render_errors: [view: Inventory.ErrorView, accepts: ~w(json json-api html)],
   pubsub: [name: Inventory.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
