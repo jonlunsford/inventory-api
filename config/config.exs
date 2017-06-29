@@ -38,6 +38,8 @@ config :guardian, Guardian,
   secret_key: System.get_env("GUARDIAN_SECRET") || "S/jyQJGbvLHyQypHJdYetsPkjNFngwoHvOVSkH83x2A9Y+XdqdebtnsdmAzN2FNM",
   serializer: Inventory.GuardianSerializer
 
+config :hound, driver: "phantomjs"
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env}.exs"
