@@ -38,7 +38,7 @@ config :guardian, Guardian,
   secret_key: System.get_env("GUARDIAN_SECRET") || "S/jyQJGbvLHyQypHJdYetsPkjNFngwoHvOVSkH83x2A9Y+XdqdebtnsdmAzN2FNM",
   serializer: Inventory.GuardianSerializer
 
-config :hound, driver: "phantomjs"
+config :hound, driver: "chrome_driver"
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

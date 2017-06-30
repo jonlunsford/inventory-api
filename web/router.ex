@@ -24,6 +24,9 @@ defmodule Inventory.Router do
     pipe_through :browser
 
     get "/", RegistrationController, :new
+    post "/register", RegistrationController, :create
+
+    resources "/sessions", SessionController, only: [:new, :create, :delete]
   end
 
   scope "/api", Inventory.Api, as: :api do
