@@ -9,6 +9,12 @@ defmodule Inventory.Router do
     plug :put_secure_browser_headers
   end
 
+  pipeline :browser_auth do
+    plug Guardian.Plug.EnsureAuthenticated, handler: Inventory.BrowserAuthErrorHandler
+    plug Guardian.Plug.LoadResource
+    plug Guardian.Plug.EnsureResource, handler: Inventory.BrowserAuthErrorHandler
+  end
+
   pipeline :api do
     plug :accepts, ["json-api", "json"]
     plug JaSerializer.Deserializer
