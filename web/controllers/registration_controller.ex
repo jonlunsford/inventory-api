@@ -3,7 +3,6 @@ defmodule Inventory.RegistrationController do
 
   alias Inventory.User
   alias Inventory.Repo
-  alias Inventory.RegistrationView
 
   def new(conn, _params) do
     changeset = User.changeset(%User{})
@@ -22,7 +21,7 @@ defmodule Inventory.RegistrationController do
         conn
         |> put_status(:unprocessable_entity)
         |> put_flash(:error, "Ooops, looks like we ran into some errors :|")
-        |> render(RegistrationView, :new, changeset: changeset)
+        |> render(:new, changeset: changeset)
     end
   end
 end
