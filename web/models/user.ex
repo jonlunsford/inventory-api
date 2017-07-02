@@ -39,7 +39,7 @@ defmodule Inventory.User do
     user = Repo.get_by(User, email: String.downcase(email))
     case authenticate(user, password) do
       true -> {:ok, user}
-      _    -> {:error, "Could not authenticate user"}
+      _    -> {:error, "Email or password is invalid"}
     end
   end
 

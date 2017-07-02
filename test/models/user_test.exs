@@ -48,7 +48,7 @@ defmodule Inventory.UserTest do
     end
 
     test "With invalid credentials returns :error" do
-      assert {:error, "Could not authenticate user"} = User.find_and_confirm_password(%{"email" => "broken@test.com", "password" => "broken"})
+      assert {:error, "Email or password is invalid"} = User.find_and_confirm_password(%{"email" => "broken@test.com", "password" => "broken"})
     end
   end
 
