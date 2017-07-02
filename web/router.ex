@@ -35,6 +35,13 @@ defmodule Inventory.Router do
     resources "/sessions", SessionController, only: [:new, :create, :delete]
   end
 
+  scope "/", Inventory do
+    pipe_through :browser
+    pipe_through :browser_auth
+
+    resources "/companies", CompanyController
+  end
+
   scope "/api", Inventory.Api, as: :api do
     pipe_through :api
 
