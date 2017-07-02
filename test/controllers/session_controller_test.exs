@@ -11,6 +11,11 @@ defmodule Inventory.SessionControllerTest do
     password_confirmation: "password"
   }
 
+  @invalid_attrs %{
+    email: "broken@broken.com",
+    password: "broken"
+  }
+
   describe "new/2" do
     test "Renders the new template", %{conn: conn} do
       conn = get conn, session_path(conn, :new)
@@ -25,6 +30,14 @@ defmodule Inventory.SessionControllerTest do
       conn = post conn, session_path(conn, :create), user: @valid_attrs
 
       assert html_response(conn, 302)
+    end
+
+    test "With invalid attributes renders the new template", %{conn: conn} do
+      User.changeset(%User{}, @valid_attrs) |> Repo.insert!
+
+      conn = post conn, session_path(conn, :create), user: @invalid_attrs
+
+      assert html_response(conn, 422) =~ "Email or password is invalid"
     end
   end
 end
