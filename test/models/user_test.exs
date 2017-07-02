@@ -40,4 +40,16 @@ defmodule Inventory.UserTest do
     Inventory.Repo.delete(user)
   end
 
+  describe "find_and_confirm_password/1" do
+    test "With valid credentials returns {:ok, user}" do
+      User.changeset(%User{}, @valid_attrs) |> Inventory.Repo.insert!
+
+      assert {:ok, _user} = User.find_and_confirm_password(%{"email" => "test@test.com", "password" => "password" })
+    end
+
+    test "With invalid credentials returns :error" do
+      assert {:error, "Could not authenticate user"} = User.find_and_confirm_password(%{"email" => "broken@test.com", "password" => "broken"})
+    end
+  end
+
 end

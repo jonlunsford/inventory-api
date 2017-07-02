@@ -1,6 +1,9 @@
 defmodule Inventory.User do
   use Inventory.Web, :model
 
+  alias Inventory.User
+  alias Inventory.Repo
+
   schema "users" do
     field :email, :string
     field :password_hash, :string
@@ -29,9 +32,27 @@ defmodule Inventory.User do
     |> unique_constraint(:email)
   end
 
+  @doc """
+  Finds a user and verifies the correct password
+  """
+  def find_and_confirm_password(%{"email" => email, "password" => password}) do
+    user = Repo.get_by(User, email: String.downcase(email))
+    case authenticate(user, password) do
+      true -> {:ok, user}
+      _    -> {:error, "Could not authenticate user"}
+    end
+  end
+
   defp hash_password(%{valid?: false} = changeset), do: changeset
   defp hash_password(%{valid?: true} = changeset) do
     hashed = Comeonin.Bcrypt.hashpwsalt(Ecto.Changeset.get_field(changeset, :password))
     Ecto.Changeset.put_change(changeset, :password_hash, hashed)
+  end
+
+  defp authenticate(user, password) do
+    case user do
+      nil -> false
+      _   -> Comeonin.Bcrypt.checkpw(password, user.password_hash)
+    end
   end
 end
