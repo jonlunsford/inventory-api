@@ -2,6 +2,14 @@ defmodule Inventory.ErrorView do
   use Inventory.Web, :view
   use JaSerializer.PhoenixView
 
+  def render("404.html", _assigns) do
+    "Page not found"
+  end
+
+  def render("500.html", _assigns) do
+    "Internal server error"
+  end
+
   def render("401.json", _assigns) do
     %{title: "Unauthorized", code: 401}
     |> JaSerializer.ErrorSerializer.format
