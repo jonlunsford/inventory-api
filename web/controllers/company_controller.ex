@@ -11,4 +11,21 @@ defmodule Inventory.CompanyController do
 
     render(conn, :index, companies: companies)
   end
+
+  def create(conn, %{"company" => params}, current_user) do
+    changeset = Company.changeset(%Company{owner_id: current_user.id}, params)
+
+    case Repo.insert(changeset) do
+      {:ok, company} ->
+        conn
+        |> put_status(:created)
+        |> put_flash(:info, "Created company: " <> company.title)
+        |> redirect(to: company_path(conn, :index))
+      {:error, changeset} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> put_flash(:error, "Ooops we ran into some errors :|")
+        |> render(:new, changeset: changeset)
+    end
+  end
 end

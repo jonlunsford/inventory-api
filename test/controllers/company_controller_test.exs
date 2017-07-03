@@ -11,6 +11,8 @@ defmodule Inventory.CompanyControllerTest do
     password_confirmation: "password"
   }
 
+  @valid_attributes %{title: "some company title"}
+
   describe "index/3" do
     test "Redirects to Session.new if user is not logged in", %{conn: conn} do
       conn = get conn, company_path(conn, :index)
@@ -46,6 +48,22 @@ defmodule Inventory.CompanyControllerTest do
         |> get(company_path(conn, :index))
 
       assert html_response(conn, 200)
+    end
+  end
+
+  describe "create/3" do
+    test "creates and redirects to index/3 when params are valid", %{conn: conn} do
+      user =
+        User.changeset(%User{}, @valid_user_attrs)
+        |> Repo.insert!
+
+      conn =
+        conn
+        |> sign_in(user)
+        |> post(company_path(conn, :create), %{company: @valid_attributes})
+
+
+      assert redirected_to(conn, 201) =~ company_path(conn, :index)
     end
   end
 end
