@@ -3,6 +3,8 @@ defmodule Inventory.SessionController do
 
   alias Inventory.User
 
+  plug :scrub_params, "user" when action in [:create]
+
   def new(conn, _params) do
     render conn, :new
   end
