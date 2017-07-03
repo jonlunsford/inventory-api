@@ -29,7 +29,7 @@ defmodule Inventory.SessionControllerTest do
 
       conn = post conn, session_path(conn, :create), user: @valid_attrs
 
-      assert html_response(conn, 302)
+      assert html_response(conn, 302) =~ company_path(conn, :index)
     end
 
     test "With invalid attributes renders the new template", %{conn: conn} do

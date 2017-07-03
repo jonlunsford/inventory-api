@@ -13,7 +13,7 @@ defmodule Inventory.SessionController do
         conn
         |> Guardian.Plug.sign_in(user)
         |> put_flash(:info, "Signed in successfully")
-        |> redirect(to: "/")
+        |> redirect(to: company_path(conn, :index))
       {:error, reason} ->
         conn
         |> put_status(422)
