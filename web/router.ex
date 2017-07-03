@@ -10,6 +10,7 @@ defmodule Inventory.Router do
   end
 
   pipeline :browser_auth do
+    plug Guardian.Plug.VerifySession
     plug Guardian.Plug.EnsureAuthenticated, handler: Inventory.BrowserAuthErrorHandler
     plug Guardian.Plug.LoadResource
     plug Guardian.Plug.EnsureResource, handler: Inventory.BrowserAuthErrorHandler
