@@ -12,6 +12,11 @@ defmodule Inventory.CompanyController do
     render(conn, :index, companies: companies)
   end
 
+  def new(conn, _params, _current_user) do
+    changeset = Company.changeset(%Company{})
+    render(conn, :new, changeset: changeset)
+  end
+
   def create(conn, %{"company" => params}, current_user) do
     changeset = Company.changeset(%Company{owner_id: current_user.id}, params)
 

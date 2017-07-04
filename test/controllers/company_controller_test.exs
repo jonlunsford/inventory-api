@@ -11,7 +11,7 @@ defmodule Inventory.CompanyControllerTest do
     password_confirmation: "password"
   }
 
-  @valid_attributes %{title: "some company title"}
+  @valid_attrs %{title: "some company title"}
 
   describe "index/3" do
     test "Redirects to Session.new if user is not logged in", %{conn: conn} do
@@ -52,7 +52,7 @@ defmodule Inventory.CompanyControllerTest do
   end
 
   describe "create/3" do
-    test "creates and redirects to index/3 when params are valid", %{conn: conn} do
+    test "with valid attributes creates and redirects to index/3", %{conn: conn} do
       user =
         User.changeset(%User{}, @valid_user_attrs)
         |> Repo.insert!
@@ -60,10 +60,24 @@ defmodule Inventory.CompanyControllerTest do
       conn =
         conn
         |> sign_in(user)
-        |> post(company_path(conn, :create), %{company: @valid_attributes})
-
+        |> post(company_path(conn, :create), %{company: @valid_attrs})
 
       assert redirected_to(conn, 201) =~ company_path(conn, :index)
+      assert Repo.get_by(Company, @valid_attrs)
+    end
+
+    test "withh invalid attributes renders new/3", %{conn: conn} do
+      user =
+        User.changeset(%User{}, @valid_user_attrs)
+        |> Repo.insert!
+
+      conn =
+        conn
+        |> sign_in(user)
+        |> post(company_path(conn, :create), %{company: %{title: ""}})
+
+      assert html_response(conn, 422)
+      refute Enum.empty?(conn.assigns.changeset.errors)
     end
   end
 end
