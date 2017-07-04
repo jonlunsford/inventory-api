@@ -80,4 +80,40 @@ defmodule Inventory.CompanyControllerTest do
       refute Enum.empty?(conn.assigns.changeset.errors)
     end
   end
+
+  describe "update/3" do
+    test "with valid attributes updates and redirects to index/3", %{conn: conn} do
+      company = Company.changeset(%Company{}, %{title: "Owned"})
+      user =
+        User.changeset(%User{}, @valid_user_attrs)
+        |> Ecto.Changeset.put_assoc(:companies, [company])
+        |> Repo.insert!
+
+      company = List.first(user.companies)
+      conn =
+        conn
+        |> sign_in(user)
+        |> patch(company_path(conn, :update, company), %{company: %{title: "Update"}})
+
+      assert redirected_to(conn, 200) =~ company_path(conn, :index)
+      assert Repo.get_by(Company, %{title: "Update"})
+    end
+
+    test "with invalid attributes renders edit/3", %{conn: conn} do
+      company = Company.changeset(%Company{}, %{title: "Owned"})
+      user =
+        User.changeset(%User{}, @valid_user_attrs)
+        |> Ecto.Changeset.put_assoc(:companies, [company])
+        |> Repo.insert!
+
+      company = List.first(user.companies)
+      conn =
+        conn
+        |> sign_in(user)
+        |> patch(company_path(conn, :update, company), %{company: %{title: ""}})
+
+      assert html_response(conn, 422)
+      refute Enum.empty?(conn.assigns.changeset.errors)
+    end
+  end
 end

@@ -33,4 +33,28 @@ defmodule Inventory.CompanyController do
         |> render(:new, changeset: changeset)
     end
   end
+
+  def edit(conn, %{"id" => id}, _current_user) do
+    company = Repo.get!(Company, id)
+    changeset = Company.changeset(company)
+    render(conn, :edit, company: company, changeset: changeset)
+  end
+
+  def update(conn, %{"id" => id, "company" => params}, current_user) do
+    company = Repo.get_by(Company, owner_id: current_user.id, id: id)
+    changeset = Company.changeset(company, params)
+
+    case Repo.update(changeset) do
+      {:ok, company} ->
+        conn
+        |> put_status(:ok)
+        |> put_flash(:info, "Updated Company: " <> company.title)
+        |> redirect(to: company_path(conn, :index))
+      {:error, changeset} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> put_flash(:error, "Ooops we ran into some errors :|")
+        |> render(:edit, company: company, changeset: changeset)
+    end
+  end
 end
