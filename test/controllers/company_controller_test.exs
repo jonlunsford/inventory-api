@@ -71,6 +71,14 @@ defmodule Inventory.CompanyControllerTest do
     end
   end
 
+  describe "show/3" do
+    test "shows chosen resource", %{conn: conn, user: user} do
+      company = List.first(user.companies)
+      conn = get conn, company_path(conn, :show, company)
+      assert html_response(conn, 200) =~ "Show company"
+    end
+  end
+
   describe "update/3" do
     test "with valid attributes updates and redirects to index/3", %{conn: conn, user: user} do
       company = List.first(user.companies)
@@ -86,6 +94,19 @@ defmodule Inventory.CompanyControllerTest do
 
       assert html_response(conn, 422)
       refute Enum.empty?(conn.assigns.changeset.errors)
+    end
+  end
+
+  describe "delete/3" do
+    test "deletes chosen resource", %{conn: conn, user: user} do
+      company =
+        Company.changeset(%Company{}, %{title: "Deleting", owner_id: user.id})
+        |> Ecto.Changeset.put_assoc(:owner, user)
+        |> Repo.insert!
+
+      conn = delete conn, company_path(conn, :delete, company)
+      assert redirected_to(conn) == company_path(conn, :index)
+      refute Repo.get(Company, company.id)
     end
   end
 end

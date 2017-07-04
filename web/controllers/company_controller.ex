@@ -34,8 +34,13 @@ defmodule Inventory.CompanyController do
     end
   end
 
-  def edit(conn, %{"id" => id}, _current_user) do
-    company = Repo.get!(Company, id)
+  def show(conn, %{"id" => id}, current_user) do
+    company = Repo.get_by(Company, owner_id: current_user.id, id: id)
+    render(conn, :show, company: company)
+  end
+
+  def edit(conn, %{"id" => id}, current_user) do
+    company = Repo.get_by(Company, owner_id: current_user.id, id: id)
     changeset = Company.changeset(company)
     render(conn, :edit, company: company, changeset: changeset)
   end
@@ -56,5 +61,17 @@ defmodule Inventory.CompanyController do
         |> put_flash(:error, "Ooops we ran into some errors :|")
         |> render(:edit, company: company, changeset: changeset)
     end
+  end
+
+  def delete(conn, %{"id" => id}, current_user) do
+    company = Repo.get_by(Company, owner_id: current_user.id, id: id)
+
+    # Here we use delete! (with a bang) because we expect
+    # it to always work (and if it does not, it will raise).
+    Repo.delete!(company)
+
+    conn
+    |> put_flash(:info, "Company deleted successfully.")
+    |> redirect(to: company_path(conn, :index))
   end
 end
